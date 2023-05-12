@@ -160,22 +160,19 @@ class KlipperScreen(Gtk.Window):
 
         # Set a default printer name if missing
         if printer_name is None:
-            if self.connected_printer is None:
-                if self.connecting_to_printer is None:
-                    printer_name = "no printer"
-                else:
-                    printer_name = self.connecting_to_printer
-            else:
+            printer_name = "no printer"
+            if self.connected_printer is not None:
                 printer_name = self.connected_printer
+            elif self.connecting_to_printer is not None:
+                printer_name = self.connecting_to_printer
 
         # Capitalize the first letter of the printer name
         printer_name = printer_name.capitalize()
 
         # Set a default printer state if missing
         if printer_state is None:
-            if self.printer is None or self.printer.state is None:
-                printer_state = "unknown state"
-            else:
+            printer_state = "unknown state"
+            if self.printer is not None and self.printer.state is not None:
                 printer_state = self.printer.state
         
         # Capitalize the first letter of the printer state
