@@ -155,7 +155,7 @@ class KlipperScreen(Gtk.Window):
 
         self.initial_connection()
 
-    def update_window_title(self, printer_name, printer_state):
+    def update_window_title(self, printer_name=None, printer_state=None):
         logging.info(f"Preparing to update window title: {printer_name} - {printer_state}")
 
         # Set a default printer name if missing
