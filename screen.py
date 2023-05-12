@@ -110,6 +110,9 @@ class KlipperScreen(Gtk.Window):
         self._config = KlipperScreenConfig(configfile, self)
         self.lang_ltr = set_text_direction(self._config.get_main_config().get("language", None))
 
+        # Set the initial window title based on default printer name (if any)
+        self.update_window_title(self._config.get_main_config().get('default_printer'))
+
         self.connect("key-press-event", self._key_press_event)
         self.connect("configure_event", self.update_size)
         monitor = Gdk.Display.get_default().get_primary_monitor()
@@ -152,6 +155,33 @@ class KlipperScreen(Gtk.Window):
 
         self.initial_connection()
 
+    def update_window_title(self, printer_name, printer_state):
+        # Set a default printer name if missing
+        if printer_name is None:
+            if self.connected_printer is None:
+                if self.connecting_to_printer is None:
+                    printer_name = "no printer"
+                else:
+                    printer_name = self.connecting_to_printer
+            else:
+                printer_name = self.connected_printer
+
+        # Capitalize the first letter of the printer name
+        printer_name = printer_name.capitalize()
+
+        # Set a default printer state if missing
+        if printer_state is None:
+            if self.printer is None or self.printer.state is None:
+                printer_state = "unknown state"
+            else:
+                printer_state = self.printer.state
+        
+        # Capitalize the first letter of the printer state
+        printer_state = printer_state.capitalize()
+
+        # Update the window title accordingly
+        Gtk.Window.set_title(self, f"KlipperScreen - {printer_name} - {printer_state}")
+
     def initial_connection(self):
         self.printers = self._config.get_printers()
         state_callbacks = {
@@ -177,6 +207,8 @@ class KlipperScreen(Gtk.Window):
             self.show_printer_select()
 
     def connect_printer(self, name):
+        self.update_window_title(name, self.printer.state)
+
         self.connecting_to_printer = name
         if self._ws is not None and self._ws.connected:
             self._ws.close()
@@ -188,6 +220,8 @@ class KlipperScreen(Gtk.Window):
 
         self.connecting = True
         self.initialized = False
+
+        self.update_window_title(name, self.printer.state)
 
         logging.info(f"Connecting to printer: {name}")
         for printer in self.printers:
@@ -635,6 +669,7 @@ class KlipperScreen(Gtk.Window):
 
     def state_disconnected(self):
         logging.debug("### Going to disconnected")
+        self.update_window_title(None, 'disconnected')
         self.close_screensaver()
         self.initialized = False
         self.printer_initializing(_("Klipper has disconnected"), remove=True)
@@ -642,6 +677,7 @@ class KlipperScreen(Gtk.Window):
         self.init_printer()
 
     def state_error(self):
+        self.update_window_title(None, 'error')
         self.close_screensaver()
         msg = _("Klipper has encountered an error.") + "\n"
         state = self.printer.get_stat("webhooks", "state_message")
@@ -652,25 +688,30 @@ class KlipperScreen(Gtk.Window):
         self.printer_initializing(msg + "\n" + state, remove=True)
 
     def state_paused(self):
+        self.update_window_title(None, 'paused')
         if "job_status" not in self._cur_panels:
             self.printer_printing()
 
     def state_printing(self):
+        self.update_window_title(None, 'printing')
         if "job_status" not in self._cur_panels:
             self.printer_printing()
         else:
             self.panels["job_status"].new_print()
 
     def state_ready(self):
+        self.update_window_title(None, 'ready')
         # Do not return to main menu if completing a job, timeouts/user input will return
         if "job_status" in self._cur_panels:
             return
         self.printer_ready()
 
     def state_startup(self):
+        self.update_window_title(None, 'startup')
         self.printer_initializing(_("Klipper is attempting to start"))
 
     def state_shutdown(self):
+        self.update_window_title(None, 'shutdown')
         self.close_screensaver()
         msg = self.printer.get_stat("webhooks", "state_message")
         msg = msg if "ready" not in msg else ""
@@ -692,6 +733,7 @@ class KlipperScreen(Gtk.Window):
         self._remove_all_panels()
         if self.printer is not None:
             self.printer.change_state(self.printer.state)
+            self.update_window_title(self.printer.name, self.printer.state)
 
     def _websocket_callback(self, action, data):
         if self.connecting:
