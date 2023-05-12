@@ -156,6 +156,8 @@ class KlipperScreen(Gtk.Window):
         self.initial_connection()
 
     def update_window_title(self, printer_name, printer_state):
+        logging.info(f"Preparing to update window title: {printer_name} - {printer_state}")
+
         # Set a default printer name if missing
         if printer_name is None:
             if self.connected_printer is None:
@@ -178,6 +180,8 @@ class KlipperScreen(Gtk.Window):
         
         # Capitalize the first letter of the printer state
         printer_state = printer_state.capitalize()
+
+        logging.info(f"Updating window title: {printer_name} - {printer_state}")
 
         # Update the window title accordingly
         Gtk.Window.set_title(self, f"KlipperScreen - {printer_name} - {printer_state}")
