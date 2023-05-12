@@ -208,7 +208,7 @@ class KlipperScreen(Gtk.Window):
             self.show_printer_select()
 
     def connect_printer(self, name):
-        self.update_window_title(name, self.printer.state)
+        self.update_window_title(name)
 
         self.connecting_to_printer = name
         if self._ws is not None and self._ws.connected:
@@ -222,7 +222,7 @@ class KlipperScreen(Gtk.Window):
         self.connecting = True
         self.initialized = False
 
-        self.update_window_title(name, self.printer.state)
+        self.update_window_title(name)
 
         logging.info(f"Connecting to printer: {name}")
         for printer in self.printers:
