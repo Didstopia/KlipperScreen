@@ -172,7 +172,7 @@ class KlipperScreen(Gtk.Window):
         # Set a default printer state if missing
         if printer_state is None:
             printer_state = "unknown state"
-            if self.printer is not None and self.printer.state is not None:
+            if self.printer is not None and hasattr(self.printer, 'state') and self.printer.state is not None:
                 printer_state = self.printer.state
         
         # Capitalize the first letter of the printer state
