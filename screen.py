@@ -155,7 +155,7 @@ class KlipperScreen(Gtk.Window):
         self.set_screenblanking_timeout(self._config.get_main_config().get('screen_blanking'))
 
         # Setup event handlers for audio support
-        self.add_events(Gdk.BUTTON_PRESS_MASK)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.connect('button-press-event', self.button_pressed)
 
         self.initial_connection()
