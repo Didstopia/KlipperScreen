@@ -157,6 +157,8 @@ class KlipperScreen(Gtk.Window):
         # Setup event handlers for audio support
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.TOUCH_MASK)
         self.connect('button-press-event', self.button_pressed)
+        self.connect("button-release-event", self.button_released)
+        self.connect('touch-event', self.touch_event)
 
         self.initial_connection()
 
@@ -1015,8 +1017,20 @@ class KlipperScreen(Gtk.Window):
 
     def button_pressed(self, window, event):
         # if event.type is Gdk.BUTTON_PRESS:
-        logging.info(f"Button pressed: {event.button}")
+        logging.info(f"Button pressed: {event.button}, {event.type}")
         playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
+
+    def button_released(self, window, event):
+        # if event.type is Gdk.BUTTON_RELEASE:
+        logging.info(f"Button released: {event.button}, {event.type}")
+        playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-resonant.wav"), block=False)
+
+    def touch_event(self, widget, event):
+        logging.info(f"Touch event: {event.type}")
+        # if event.type == Gdk.EventType.TOUCH_BEGIN:
+        #     self.button_pressed(widget, event)
+        # elif event.type == Gdk.EventType.TOUCH_END:
+        #     self.button_released(widget, event)
 
     def update_size(self, *args):
         self.width, self.height = self.get_size()
