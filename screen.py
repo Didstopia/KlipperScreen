@@ -155,7 +155,9 @@ class KlipperScreen(Gtk.Window):
         self.set_screenblanking_timeout(self._config.get_main_config().get('screen_blanking'))
 
         # Setup event handlers for audio support
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.TOUCH_MASK)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
+        self.add_events(Gdk.EventMask.TOUCH_MASK)
         self.connect('button-press-event', self.button_pressed)
         self.connect("button-release-event", self.button_released)
         self.connect('touch-event', self.touch_event)
@@ -1017,12 +1019,21 @@ class KlipperScreen(Gtk.Window):
 
     def button_pressed(self, window, event):
         # if event.type is Gdk.BUTTON_PRESS:
-        logging.info(f"Button pressed: {event.button}, {event.type}")
+        # logging.info(f"Button pressed: {event.button}, {event.type}")
+        if event.type is Gdk.EventType.GDK_BUTTON_PRESS:
+            logging.info(f"Button pressed: {event.button}, {event.type}")
+        elif event.type is Gdk.EventType.GDK_BUTTON_RELEASE:
+            logging.info(f"Button released: {event.button}, {event.type}")
+        else:
+            logging.info(f"Unknown button event: {event.button}, {event.type}")
         playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
 
     def button_released(self, window, event):
         # if event.type is Gdk.BUTTON_RELEASE:
-        logging.info(f"Button released: {event.button}, {event.type}")
+        if event.type is Gdk.EventType.GDK_BUTTON_RELEASE:            
+            logging.info(f"Button released: {event.button}, {event.type}")
+        else:
+            logging.info(f"Unknown button event: {event.button}, {event.type}")
         playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-resonant.wav"), block=False)
 
     def touch_event(self, widget, event):
