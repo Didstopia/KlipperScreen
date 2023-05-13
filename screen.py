@@ -155,7 +155,7 @@ class KlipperScreen(Gtk.Window):
         self.set_screenblanking_timeout(self._config.get_main_config().get('screen_blanking'))
 
         # Setup event handlers for audio support
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.TOUCH_MASK)
         self.connect('button-press-event', self.button_pressed)
 
         self.initial_connection()
@@ -1014,9 +1014,9 @@ class KlipperScreen(Gtk.Window):
             self.base_panel.back()
 
     def button_pressed(self, window, event):
-        if event.type is Gdk.BUTTON_PRESS:
-            logging.info(f"Button pressed: {event.button}")
-            playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
+        # if event.type is Gdk.BUTTON_PRESS:
+        logging.info(f"Button pressed: {event.button}")
+        playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
 
     def update_size(self, *args):
         self.width, self.height = self.get_size()
