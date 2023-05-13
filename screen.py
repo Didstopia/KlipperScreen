@@ -26,6 +26,7 @@ from ks_includes.printer import Printer
 from ks_includes.widgets.keyboard import Keyboard
 from ks_includes.config import KlipperScreenConfig
 from panels.base_panel import BasePanel
+from playsound import playsound
 
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
@@ -152,6 +153,10 @@ class KlipperScreen(Gtk.Window):
             # Prevent this dialog from being destroyed
             self.dialogs = []
         self.set_screenblanking_timeout(self._config.get_main_config().get('screen_blanking'))
+
+        # Setup event handlers for audio support
+        self.add_events(Gtk.gdk.BUTTON_PRESS_MASK)
+        self.connect('button-press-event', self.button_pressed)
 
         self.initial_connection()
 
@@ -1007,6 +1012,11 @@ class KlipperScreen(Gtk.Window):
             self._menu_go_back(home=True)
         elif keyval_name == "BackSpace" and len(self._cur_panels) > 1 and self.keyboard is None:
             self.base_panel.back()
+
+    def button_pressed(self, window, event):
+        if event.type is Gtk.gdk.BUTTON_PRESS:
+            logging.info(f"Button pressed: {event.button}")
+            playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
 
     def update_size(self, *args):
         self.width, self.height = self.get_size()
