@@ -1021,7 +1021,7 @@ class KlipperScreen(Gtk.Window):
         if event.type is Gdk.EventType.BUTTON_PRESS:
             logging.info(f"Button pressed: {event.button}, {event.type}")
         elif event.type is Gdk.EventType.BUTTON_RELEASE:
-            logging.info(f"Button released: {event.button}, {event.type}")
+            logging.info(f"Button pressed: {event.button}, {event.type}")
         else:
             logging.info(f"Unknown button press event: {event.button}, {event.type}")
         playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
