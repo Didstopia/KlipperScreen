@@ -1018,30 +1018,29 @@ class KlipperScreen(Gtk.Window):
             self.base_panel.back()
 
     def button_pressed(self, window, event):
-        # if event.type is Gdk.BUTTON_PRESS:
-        # logging.info(f"Button pressed: {event.button}, {event.type}")
-        if event.type is Gdk.EventType.GDK_BUTTON_PRESS:
+        if event.type is Gdk.EventType.BUTTON_PRESS:
             logging.info(f"Button pressed: {event.button}, {event.type}")
-        elif event.type is Gdk.EventType.GDK_BUTTON_RELEASE:
+        elif event.type is Gdk.EventType.BUTTON_RELEASE:
             logging.info(f"Button released: {event.button}, {event.type}")
         else:
-            logging.info(f"Unknown button event: {event.button}, {event.type}")
+            logging.info(f"Unknown button press event: {event.button}, {event.type}")
         playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-mellow.wav"), block=False)
 
     def button_released(self, window, event):
-        # if event.type is Gdk.BUTTON_RELEASE:
-        if event.type is Gdk.EventType.GDK_BUTTON_RELEASE:            
+        if event.type is Gdk.EventType.BUTTON_RELEASE:            
             logging.info(f"Button released: {event.button}, {event.type}")
         else:
-            logging.info(f"Unknown button event: {event.button}, {event.type}")
+            logging.info(f"Unknown button release event: {event.button}, {event.type}")
         playsound(os.path.join(klipperscreendir, "ks_includes", "audio", "tap-resonant.wav"), block=False)
 
     def touch_event(self, widget, event):
         logging.info(f"Touch event: {event.type}")
-        # if event.type == Gdk.EventType.TOUCH_BEGIN:
-        #     self.button_pressed(widget, event)
-        # elif event.type == Gdk.EventType.TOUCH_END:
-        #     self.button_released(widget, event)
+        if event.type == Gdk.EventType.TOUCH_BEGIN:
+            logging.info(f"Touch begin: {event.type}")
+        elif event.type == Gdk.EventType.TOUCH_END:
+            logging.info(f"Touch end: {event.type}")
+        else:
+            logging.info(f"Unknown touch event: {event.type}")
 
     def update_size(self, *args):
         self.width, self.height = self.get_size()
